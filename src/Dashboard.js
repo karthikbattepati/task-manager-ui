@@ -15,14 +15,23 @@ export default function Dashboard({ userId, logout }) {
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
 
-  // ✅ UPDATED BASE URL
   const API = "https://task-manager-mbg4.onrender.com";
 
+  // ✅ FIXED useEffect (NO ESLINT ERROR)
   useEffect(() => {
-    if (userId) {
-      fetchTasks();
-    }
-  }, [userId]);
+    if (!userId) return;
+
+    const fetchTasks = async () => {
+      try {
+        const res = await axios.get(`${API}/api/tasks/${userId}`);
+        setTasks(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTasks();
+  }, [userId]); // ✅ dependency fixed
 
   const fetchTasks = async () => {
     try {
@@ -43,7 +52,6 @@ export default function Dashboard({ userId, logout }) {
         priority
       });
 
-      // clear inputs
       setTitle("");
       setDescription("");
       setDueDate("");
@@ -93,7 +101,6 @@ export default function Dashboard({ userId, logout }) {
 
   const deleteAccount = async () => {
     const password = prompt("Enter password to delete account");
-
     if (!password) return;
 
     try {
@@ -108,7 +115,6 @@ export default function Dashboard({ userId, logout }) {
         localStorage.clear();
         window.location.reload();
       }
-
     } catch (err) {
       console.error(err);
       alert("Error deleting account");
@@ -153,9 +159,18 @@ export default function Dashboard({ userId, logout }) {
 
           {editId === task.id ? (
             <div style={{ width: "100%" }}>
-              <input value={editData.title} onChange={e => setEditData({ ...editData, title: e.target.value })} />
-              <input value={editData.description} onChange={e => setEditData({ ...editData, description: e.target.value })} />
-              <select value={editData.status} onChange={e => setEditData({ ...editData, status: e.target.value })}>
+              <input
+                value={editData.title}
+                onChange={e => setEditData({ ...editData, title: e.target.value })}
+              />
+              <input
+                value={editData.description}
+                onChange={e => setEditData({ ...editData, description: e.target.value })}
+              />
+              <select
+                value={editData.status}
+                onChange={e => setEditData({ ...editData, status: e.target.value })}
+              >
                 <option>PENDING</option>
                 <option>COMPLETED</option>
               </select>
