@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Login from "./Login";
+import Signup from "./Signup";
+import Dashboard from "./Dashboard";
 
-function App() {
+export default function App() {
+
+  const [page, setPage] = useState("login");
+
+  //ensure string → number consistency
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
+
+  if (!userId) {
+
+    if (page === "signup") {
+      return <Signup goToLogin={() => setPage("login")} />;
+    }
+
+    return (
+      <Login
+        setUserId={(id) => {
+          setUserId(id);
+        }}
+        goToSignup={() => setPage("signup")}
+      />
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Dashboard
+      userId={userId}
+      logout={() => {
+        localStorage.clear();
+        setUserId(null);
+      }}
+    />
   );
 }
-
-export default App;
